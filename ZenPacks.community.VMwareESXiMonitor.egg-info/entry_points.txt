@@ -1,0 +1,3 @@
+[zenoss.zenpacks]
+ZenPacks.community.VMwareESXiMonitor = ZenPacks.community.VMwareESXiMonitor
+
