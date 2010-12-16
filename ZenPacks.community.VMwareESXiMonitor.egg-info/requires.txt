@@ -1,2 +1,0 @@
-ZenPacks.zenoss.ZenossVirtualHostMonitor>=2.3.0
-ZenPacks.community.VMwareDataSource>=1.0

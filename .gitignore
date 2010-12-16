@@ -1,0 +1,4 @@
+#ignore python compile files and objects
+*.pyc
+*.pyo
+*.egg-info/
