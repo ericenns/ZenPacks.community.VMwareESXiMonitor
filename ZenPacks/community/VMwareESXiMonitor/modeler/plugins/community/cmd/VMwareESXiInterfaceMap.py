@@ -52,7 +52,7 @@ class VMwareESXiInterfaceMap(PythonPlugin):
 				om.interfaceName = om.id
 				om.description = ifDescription
 				om.type = ifType
-				om.speed = ifSpeed
+				om.speed = int(ifSpeed) * 1000000
 				om.mtu = ifMtu
 				om.duplex = ifDuplex
 				om.ifindex = ifIndex
