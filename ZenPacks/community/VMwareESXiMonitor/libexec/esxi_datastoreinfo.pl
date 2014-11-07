@@ -18,17 +18,18 @@ Opts::validate();
 
 Util::connect();
 
-my $vm_views = Vim::find_entity_views(
-    view_type => 'VirtualMachine',
-    properties => [ 'name', 'config' ]
+my $datastore_views = Vim::find_entity_views(
+    view_type => 'Datastore',
+    properties => [ 'summary' ]
 );
 
-foreach my $vm (@$vm_views) {
-    my $name = $vm->name;
-    my $memory = $vm->config->hardware->memoryMB;
-    my $os = $vm->config->guestFullName;
+foreach my $datastore (@$datastore_views) {
+    my $name = $datastore->summary->name;
+    my $type = $datastore->summary->type;
+    my $capacity = $datastore->summary->capacity;
+    my $accessible = $datastore->summary->accessible;
 
-    print $name . ";" . $memory . ";" . $os . "\n";
+    print $name . ";" . $type . ";" . $capacity . ";" . $accessible . "\n";
 }
 
 Util::disconnect();

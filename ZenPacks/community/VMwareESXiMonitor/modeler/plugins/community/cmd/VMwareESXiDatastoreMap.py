@@ -8,9 +8,9 @@
 #
 ################################################################################
 
-__doc__ = """VMwareESXiGuestMap
+__doc__ = """VMwareESXiDatastoreMap
 
-VMwareESXiGuestMap gathers ESXi Guest information.
+VMwareESXiDatastoreMap gathers ESXi Datastore information.
 
 """
 
@@ -19,18 +19,18 @@ import Globals
 from Products.DataCollector.plugins.CollectorPlugin import PythonPlugin
 from Products.DataCollector.plugins.DataMaps import ObjectMap
 
-class VMwareESXiGuestMap(PythonPlugin):
-    maptype = 'VMwareESXiGuestMap'
-    relname = "esxiVm"
-    modname = 'ZenPacks.community.VMwareESXiMonitor.ESXiVM'
+class VMwareESXiDatastoreMap(PythonPlugin):
+    maptype = 'VMwareESXiDatastoreMap'
+    relname = "esxiDatastore"
+    modname = 'ZenPacks.community.VMwareESXiMonitor.ESXiDatastore'
     deviceProperties = PythonPlugin.deviceProperties + (
         'zVSphereUsername',
         'zVSpherePassword'
     )
 
     def collect(self, device, log):
-        log.info('Getting VMware ESXi guest info for device %s' % device.id)
-        cmd = os.path.abspath('%s/../../../../libexec/esxi_guestinfo.pl' % os.path.dirname(__file__))
+        log.info('Getting VMware ESXi datastore info for device %s' % device.id)
+        cmd = os.path.abspath('%s/../../../../libexec/esxi_datastoreinfo.pl' % os.path.dirname(__file__))
         username = getattr(device, 'zVSphereUsername', None)
         password = getattr(device, 'zVSpherePassword', None)
         if (not username or not password):
@@ -42,19 +42,22 @@ class VMwareESXiGuestMap(PythonPlugin):
             return results
 
     def process(self, device, results, log):
-        log.info('Processing VMware ESXi guest info for device %s' % device.id)
+        log.info('Processing VMware ESXi datastore info for device %s' % device.id)
         rm = self.relMap()
         rlines = results.split("\n")
         for line in rlines:
             if line.startswith("Warning:"):
                 log.warning('%s' % line)
             elif re.search(';', line):
-                name, memSize, os = line.split(';')
+                name, type, capacity, accessible = line.split(';')
+                if not int(accessible) == 1:
+                    log.warning('Datastore %s of device %s is not accessible' % name, device.id)
+                    continue
                 rm.append(self.objectMap({
                     'id': self.prepId(name),
                     'title': name,
-                    'osType': os,
-                    'memory': int(memSize) * 1024 * 1024,
+                    'type': type,
+                    'capacity': long(capacity),
                 }))
         log.debug(rm)
 

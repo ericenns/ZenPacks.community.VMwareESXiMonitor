@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+    <adapter
+        provides=".interfaces.IESXiHostInfo"
+        for=".ESXiHost.ESXiHost"
+        factory=".info.ESXiHostInfo"
+    />
+
+    <adapter
+        provides=".interfaces.IVMwareDataSourceInfo"
+        for=".datasources.VMwareDataSource.VMwareDataSource"
+        factory=".info.VMwareDataSourceInfo"
+    />
+
+    <adapter
+        provides=".interfaces.IESXiDatastoreInfo"
+        for=".ESXiDatastore.ESXiDatastore"
+        factory=".info.ESXiDatastoreInfo"
+    />
+
+    <adapter
+        provides=".interfaces.IESXiVMInfo"
+        for=".ESXiVM.ESXiVM"
+        factory=".info.ESXiVMInfo"
+    />
+
+    <include package=".browser"/>
+</configure>
+

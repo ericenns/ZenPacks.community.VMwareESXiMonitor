@@ -8,9 +8,9 @@
 #
 ################################################################################
 
-__doc__ = """VMwareESXiGuestMap
+__doc__ = """VMwareESXiInterfaceMap
 
-VMwareESXiGuestMap gathers ESXi Guest information.
+VMwareESXiInterfaceMap gathers ESXi Interface information.
 
 """
 
@@ -19,18 +19,19 @@ import Globals
 from Products.DataCollector.plugins.CollectorPlugin import PythonPlugin
 from Products.DataCollector.plugins.DataMaps import ObjectMap
 
-class VMwareESXiGuestMap(PythonPlugin):
-    maptype = 'VMwareESXiGuestMap'
-    relname = "esxiVm"
-    modname = 'ZenPacks.community.VMwareESXiMonitor.ESXiVM'
+class VMwareESXiInterfaceMap(PythonPlugin):
+    compname = "os"
+    maptype = 'VMwareESXiInterfaceMap'
+    relname = "interfaces"
+    modname = "Products.ZenModel.IpInterface"
     deviceProperties = PythonPlugin.deviceProperties + (
         'zVSphereUsername',
         'zVSpherePassword'
     )
 
     def collect(self, device, log):
-        log.info('Getting VMware ESXi guest info for device %s' % device.id)
-        cmd = os.path.abspath('%s/../../../../libexec/esxi_guestinfo.pl' % os.path.dirname(__file__))
+        log.info('Getting VMware ESXi interface info for device %s' % device.id)
+        cmd = os.path.abspath('%s/../../../../libexec/esxi_interfaceinfo.pl' % os.path.dirname(__file__))
         username = getattr(device, 'zVSphereUsername', None)
         password = getattr(device, 'zVSpherePassword', None)
         if (not username or not password):
@@ -42,20 +43,36 @@ class VMwareESXiGuestMap(PythonPlugin):
             return results
 
     def process(self, device, results, log):
-        log.info('Processing VMware ESXi guest info for device %s' % device.id)
+        log.info('Processing VMware ESXi interface info for device %s' % device.id)
         rm = self.relMap()
         rlines = results.split("\n")
         for line in rlines:
             if line.startswith("Warning:"):
                 log.warning('%s' % line)
             elif re.search(';', line):
-                name, memSize, os = line.split(';')
-                rm.append(self.objectMap({
-                    'id': self.prepId(name),
-                    'title': name,
-                    'osType': os,
-                    'memory': int(memSize) * 1024 * 1024,
-                }))
+                ifName, mac, type, description, mtu, speed, operStatus, duplex, ipAddr = line.split(';')
+                om = self.objectMap()
+                om.id = self.prepId(ifName)
+                om.interfaceName = ifName
+                om.ifindex = ifName
+                om.macaddress = mac
+                om.type = type
+                om.description = description
+                om.mtu = int(mtu)
+                om.speed = long(speed)
+                if int(operStatus) == 1:
+                    om.adminStatus = 1
+                    om.operStatus = 1
+                elif int(operStatus) == 0:
+                    om.adminStatus = 2
+                    om.operStatus = 2
+                om.duplex = int(duplex)
+                if ipAddr:
+                    om.setIpAddresses = ipAddr
+                else:
+                    om.setIpAddresses = []
+                rm.append(om)
+
         log.debug(rm)
 
         return rm
