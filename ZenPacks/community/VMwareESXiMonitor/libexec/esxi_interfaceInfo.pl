@@ -2,7 +2,7 @@
 ################################################################################
 #
 # This program is part of the VMwareESXiMonitor Zenpack for Zenoss.
-# Copyright (C) 2010 Eric Enns.
+# Copyright (C) 2014 Eric Enns, Matthias Kittl.
 #
 # This program can be used under the GNU General Public License version 2
 # You can find full information here: http://www.zenoss.com/oss
@@ -18,56 +18,57 @@ Opts::validate();
 
 Util::connect();
 
-my $host_view = Vim::find_entity_views(
-	view_type => 'HostSystem'
+my $host_views = Vim::find_entity_views(
+    view_type => 'HostSystem',
+    properties => [ 'config.network' ]
 );
 
-my $host = @$host_view[0];
+foreach my $host (@$host_views) {
+    my $ifName;
+    my $mac;
+    my $type;
+    my $description;
+    my $mtu;
+    my $speed;
+    my $operStatus;
+    my $duplex;
+    my $ipAddr;
 
-my $ifName;
-my $status;
-my $description = "";
-my $ipAddr;
-my $mac;
-my $type = "VMwareNic";
-my $mtu;
-my $speed;
-my $duplex;
+    foreach my $vnic (@{$host->get_property('config.network')->vnic}) {
+        $ifName = $vnic->device;
+        $mac = $vnic->spec->mac;
+        $type = "Virtual Adapter";
+        $description = $vnic->portgroup;
+        $mtu = $vnic->spec->mtu;
+        $speed = 0;
+        $operStatus = 1;
+        $duplex = 0;
+        $ipAddr = $vnic->spec->ip->ipAddress;
 
-foreach my $vnics (@{$host->config->network->vnic})
-{
-    $ifName = $vnics->device;
-	$status = 1;
-	$description = $vnics->portgroup;
-    $ipAddr = $vnics->spec->ip->ipAddress;
-    $mac = $vnics->spec->mac;
-	$mtu = $vnics->spec->mtu;
-	$speed = 0;
-	$duplex = 0;
-    print "$ifName;$status;$description;$ipAddr;$mac;$type;$mtu;$speed;$duplex\n";
-}
+        print "$ifName;$mac;$type;$description;$mtu;$speed;$operStatus;$duplex;$ipAddr\n";
+    }
 
-foreach my $pnics (@{$host->config->network->pnic})
-{
-	$ifName = $pnics->device;
-	$description = "";
-	if (exists $pnics->{linkSpeed})
-	{
-		$status = 1;
-		$mtu = 0;
-		$speed = $pnics->linkSpeed->speedMb;
-		$duplex = $pnics->linkSpeed->duplex;
-	}
-	else
-	{
-		$status = 0;
-		$mtu = 0;
-		$speed = 0;
-		$duplex = 0;
-	}
-	$ipAddr = $pnics->spec->ip->ipAddress;
-	$mac = $pnics->mac;
-	print "$ifName;$status;$description;$ipAddr;$mac;$type;$mtu;$speed;$duplex\n";
+    foreach my $pnic (@{$host->get_property('config.network')->pnic}) {
+        $ifName = $pnic->device;
+        $mac = $pnic->mac;
+        $type = "Physical Adapter";
+        $description = "";
+        $mtu = 0;
+        if (exists $pnic->{linkSpeed}) {
+            $speed = $pnic->linkSpeed->speedMb;
+            $operStatus = 1;
+            $duplex = $pnic->linkSpeed->duplex;
+        }
+        else {
+            $speed = 0;
+            $operStatus = 0;
+            $duplex = 0;
+        }
+        $ipAddr = $pnic->spec->ip->ipAddress;
+
+        print "$ifName;$mac;$type;$description;$mtu;$speed;$operStatus;$duplex;$ipAddr\n";
+    }
 }
 
 Util::disconnect();
+
