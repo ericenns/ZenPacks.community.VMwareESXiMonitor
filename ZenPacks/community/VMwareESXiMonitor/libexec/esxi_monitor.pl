@@ -183,7 +183,7 @@ sub get_info {
     my $values;
     $values = get_performance_values($views, $perfmgr_view, $group_type, ($counter.".".$rollup_type));
 
-    if (defined($values) && scalar @$values) {
+    if (defined($values) && exists $$values[0][0]->{value}) {
         my ( $t ) = split(/,/, $$values[0][0]->value);
         return $t;
     }
