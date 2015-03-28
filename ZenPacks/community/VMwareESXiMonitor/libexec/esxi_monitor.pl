@@ -66,14 +66,14 @@ eval {
         }
         else {
             my $perfmgr_view = Vim::get_view(mo_ref => Vim::get_service_content()->perfManager, properties => [ 'perfCounter' ]);
-            my $memUsage = get_info($vm_view, $perfmgr_view, 'mem', 'usage', 'minimum');
-            my $memOverhead = get_info($vm_view, $perfmgr_view, 'mem', 'overhead', 'minimum');
-            my $memConsumed = get_info($vm_view, $perfmgr_view, 'mem', 'consumed', 'minimum');
-            my $diskUsage = get_info($vm_view, $perfmgr_view, 'disk', 'usage', 'average');
-            my $cpuUsageMin = get_info($vm_view, $perfmgr_view, 'cpu', 'usage', 'minimum');
-            my $cpuUsageMax = get_info($vm_view, $perfmgr_view, 'cpu', 'usage', 'maximum');
-            my $cpuUsageAvg = get_info($vm_view, $perfmgr_view, 'cpu', 'usage', 'average');
-            my $cpuUsage = get_info($vm_view, $perfmgr_view, 'cpu', 'usagemhz', 'average');
+            my $memUsage = get_info($vm_view, $perfmgr_view, 'mem', 'usage', 'minimum') / 100;
+            my $memOverhead = get_info($vm_view, $perfmgr_view, 'mem', 'overhead', 'minimum') * 1024;
+            my $memConsumed = get_info($vm_view, $perfmgr_view, 'mem', 'consumed', 'minimum') * 1024;
+            my $diskUsage = get_info($vm_view, $perfmgr_view, 'disk', 'usage', 'average') * 1024;
+            my $cpuUsageMin = get_info($vm_view, $perfmgr_view, 'cpu', 'usage', 'minimum') / 100;
+            my $cpuUsageMax = get_info($vm_view, $perfmgr_view, 'cpu', 'usage', 'maximum') / 100;
+            my $cpuUsageAvg = get_info($vm_view, $perfmgr_view, 'cpu', 'usage', 'average') / 100;
+            my $cpuUsage = get_info($vm_view, $perfmgr_view, 'cpu', 'usagemhz', 'average') * 1000000;
 
             my $overallStatus = $$vm_view[0]->get_property('summary.overallStatus')->val;
             my $operStatus = 0;
@@ -99,26 +99,29 @@ eval {
         die "Runtime error\n" if (!defined($host_view));
         die "Host \"" . $$host_name{"name"} . "\" does not exist\n" if (!@$host_view);
         if (uc($$host_view[0]->get_property('runtime.inMaintenanceMode')) eq "TRUE") {
-            print "hostperf|sysUpTime= memSwapused= memGranted= memActive= diskUsage= cpuUsagemhz= cpuUsage= cpuReservedcapacity= netReceived= netTransmitted= netPacketsRx= netPacketsTx= netDroppedRx= netDroppedTx=\n";
+            print "hostperf|sysUpTime= memUsage= memSwapused= memGranted= memActive= diskUsage= cpuUsageMin= cpuUsageMax= cpuUsageAvg= cpuUsage= cpuReservedcapacity= netReceived= netTransmitted= netPacketsRx= netPacketsTx= netDroppedRx= netDroppedTx=\n";
         }
         else {
             my $perfmgr_view = Vim::get_view(mo_ref => Vim::get_service_content()->perfManager, properties => [ 'perfCounter' ]);
             my $sysUpTime = get_info($host_view, $perfmgr_view, 'sys', 'uptime', 'latest') * 100;
-            my $memSwapused = get_info($host_view, $perfmgr_view, 'mem', 'swapused', 'maximum');
-            my $memGranted = get_info($host_view, $perfmgr_view, 'mem', 'granted', 'maximum');
-            my $memActive = get_info($host_view, $perfmgr_view, 'mem', 'active', 'maximum');
-            my $diskUsage = get_info($host_view, $perfmgr_view, 'disk', 'usage', 'average');
-            my $cpuUsagemhz = get_info($host_view, $perfmgr_view, 'cpu', 'usagemhz', 'average');
-            my $cpuUsage = get_info($host_view, $perfmgr_view, 'cpu', 'usage', 'average');
-            my $cpuReservedcapacity = get_info($host_view, $perfmgr_view, 'cpu', 'reservedCapacity', 'average');
-            my $netReceived = get_info($host_view, $perfmgr_view, 'net', 'received', 'average');
-            my $netTransmitted = get_info($host_view, $perfmgr_view, 'net', 'transmitted', 'average');
+            my $memUsage = get_info($host_view, $perfmgr_view, 'mem', 'usage', 'minimum') / 100;
+            my $memSwapused = get_info($host_view, $perfmgr_view, 'mem', 'swapused', 'maximum') * 1024;
+            my $memGranted = get_info($host_view, $perfmgr_view, 'mem', 'granted', 'maximum') * 1024;
+            my $memActive = get_info($host_view, $perfmgr_view, 'mem', 'active', 'maximum') * 1024;
+            my $diskUsage = get_info($host_view, $perfmgr_view, 'disk', 'usage', 'average') * 1024;
+            my $cpuUsageMin = get_info($host_view, $perfmgr_view, 'cpu', 'usage', 'minimum') / 100;
+            my $cpuUsageMax = get_info($host_view, $perfmgr_view, 'cpu', 'usage', 'maximum') / 100;
+            my $cpuUsageAvg = get_info($host_view, $perfmgr_view, 'cpu', 'usage', 'average') / 100;
+            my $cpuUsage = get_info($host_view, $perfmgr_view, 'cpu', 'usagemhz', 'average') * 1000000;
+            my $cpuReservedcapacity = get_info($host_view, $perfmgr_view, 'cpu', 'reservedCapacity', 'average') * 1000000;
+            my $netReceived = get_info($host_view, $perfmgr_view, 'net', 'received', 'average') * 8192;
+            my $netTransmitted = get_info($host_view, $perfmgr_view, 'net', 'transmitted', 'average') * 8192;
             my $netPacketsRx = get_info($host_view, $perfmgr_view, 'net', 'packetsRx', 'summation');
             my $netPacketsTx = get_info($host_view, $perfmgr_view, 'net', 'packetsTx', 'summation');
             my $netDroppedRx = get_info($host_view, $perfmgr_view, 'net', 'droppedRx', 'summation');
             my $netDroppedTx = get_info($host_view, $perfmgr_view, 'net', 'droppedTx', 'summation');
 
-            print "hostperf|sysUpTime=".$sysUpTime." memSwapused=".$memSwapused." memGranted=".$memGranted." memActive=".$memActive." diskUsage=".$diskUsage." cpuUsagemhz=".$cpuUsagemhz." cpuUsage=".$cpuUsage." cpuReservedcapacity=".$cpuReservedcapacity." netReceived=".$netReceived." netTransmitted=".$netTransmitted." netPacketsRx=".$netPacketsRx." netPacketsTx=".$netPacketsTx." netDroppedRx=".$netDroppedRx." netDroppedTx=".$netDroppedTx."\n";
+            print "hostperf|sysUpTime=".$sysUpTime." memUsage=".$memUsage." memSwapused=".$memSwapused." memGranted=".$memGranted." memActive=".$memActive." diskUsage=".$diskUsage." cpuUsageMin=".$cpuUsageMin." cpuUsageMax=".$cpuUsageMax." cpuUsageAvg=".$cpuUsageAvg." cpuUsage=".$cpuUsage." cpuReservedcapacity=".$cpuReservedcapacity." netReceived=".$netReceived." netTransmitted=".$netTransmitted." netPacketsRx=".$netPacketsRx." netPacketsTx=".$netPacketsTx." netDroppedRx=".$netDroppedRx." netDroppedTx=".$netDroppedTx."\n";
         }
     }
 };

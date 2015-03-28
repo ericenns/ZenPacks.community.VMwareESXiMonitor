@@ -40,15 +40,15 @@ class ESXiVM(DeviceComponent, ManagedEntity):
 
     def adminStatus(self):
         status = self.cacheRRDValue('adminStatus')
-        if status is not None and not isnan(status):
-            return int(status)
-        return None
+        if status is None or isnan(status):
+            return None
+        return int(status)
 
     def operStatus(self):
         status = self.cacheRRDValue('operStatus')
-        if status is not None and not isnan(status):
-            return int(status)
-        return None
+        if status is None or isnan(status):
+            return None
+        return int(status)
 
 InitializeClass(ESXiVM)
 
