@@ -28,7 +28,6 @@ class VMwareDataSource(ZenPackPersistence, RRDDataSource.SimpleRRDDataSource):
 
     sourcetype = 'VMware'
     eventClass = Cmd_Fail
-    parser = 'ZenPacks.community.VMwareESXiMonitor.parsers.vmware'
     performanceSource = ''
     instance = ''
 
@@ -70,7 +69,7 @@ class VMwareDataSource(ZenPackPersistence, RRDDataSource.SimpleRRDDataSource):
     def addDataPoints(self):
         datastore = ['diskFreeSpace','connectionStatus']
         guest = ['memUsage','memOverhead','memConsumed','diskUsage','cpuUsageMin','cpuUsageMax','cpuUsageAvg','cpuUsage','adminStatus','operStatus']
-        host = ['sysUpTime','memSwapused','memGranted','memActive','diskUsage','cpuUsagemhz','cpuUsage','cpuReservedcapacity','netReceived','netTransmitted','netPacketsRx','netPacketsTx','netDroppedRx','netDroppedTx']
+        host = ['sysUpTime','memUsage','memSwapused','memGranted','memActive','diskUsage','cpuUsageMin','cpuUsageMax','cpuUsageAvg','cpuUsage','cpuReservedcapacity','netReceived','netTransmitted','netPacketsRx','netPacketsTx','netDroppedRx','netDroppedTx']
 
         if self.id == "VMwareDatastore":
             self.performanceSource = "VMwareDatastore"

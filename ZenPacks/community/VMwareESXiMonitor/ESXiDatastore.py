@@ -39,22 +39,22 @@ class ESXiDatastore(DeviceComponent, ManagedEntity):
     def usedSpace(self):
         capacity = self.capacity
         free = self.freeSpace()
-        if capacity is not None and free is not None:
-            return capacity - free
-        return None
+        if capacity is None or free is None:
+            return None
+        return capacity - free
 
     def freeSpace(self):
         free = self.cacheRRDValue('diskFreeSpace')
-        if free is not None and not isnan(free):
-            return long(free)
-        return None
+        if free is None or isnan(free):
+            return None
+        return long(free)
 
     def usedPercent(self):
         capacity = self.capacity
         used = self.usedSpace()
-        if capacity is not None and used is not None:
-            return round(100.0 * used / capacity)
-        return 'Unknown'
+        if capacity is None or used is None:
+            return 'Unknown'
+        return round(100.0 * used / capacity)
 
 InitializeClass(ESXiDatastore)
 

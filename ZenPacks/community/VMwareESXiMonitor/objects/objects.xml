@@ -24,7 +24,7 @@ True
 <tomanycont id='rrdTemplates'>
 <object id='ESXiDatastore' module='Products.ZenModel.RRDTemplate' class='RRDTemplate'>
 <property type="string" id="targetPythonClass" mode="w" >
-Products.ZenModel.Device
+ZenPacks.community.VMwareESXiMonitor.ESXiDatastore
 </property>
 <tomanycont id='datasources'>
 <object id='VMwareDatastore' module='ZenPacks.community.VMwareESXiMonitor.datasources.VMwareDataSource' class='VMwareDataSource'>
@@ -126,7 +126,7 @@ here.capacity * .1
 500
 </property>
 <property type="string" id="units" mode="w" >
-percentage
+percent
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -196,7 +196,7 @@ ${graphPoint/id}
 </object>
 <object id='ESXiHost' module='Products.ZenModel.RRDTemplate' class='RRDTemplate'>
 <property type="string" id="targetPythonClass" mode="w" >
-Products.ZenModel.Device
+ZenPacks.community.VMwareESXiMonitor.ESXiHost
 </property>
 <tomanycont id='datasources'>
 <object id='VMwareHost' module='ZenPacks.community.VMwareESXiMonitor.datasources.VMwareDataSource' class='VMwareDataSource'>
@@ -235,7 +235,23 @@ GAUGE
 True
 </property>
 </object>
-<object id='cpuUsagemhz' module='Products.ZenModel.RRDDataPoint' class='RRDDataPoint'>
+<object id='cpuUsageAvg' module='Products.ZenModel.RRDDataPoint' class='RRDDataPoint'>
+<property select_variable="rrdtypes" type="selection" id="rrdtype" mode="w" >
+GAUGE
+</property>
+<property type="boolean" id="isrow" mode="w" >
+True
+</property>
+</object>
+<object id='cpuUsageMax' module='Products.ZenModel.RRDDataPoint' class='RRDDataPoint'>
+<property select_variable="rrdtypes" type="selection" id="rrdtype" mode="w" >
+GAUGE
+</property>
+<property type="boolean" id="isrow" mode="w" >
+True
+</property>
+</object>
+<object id='cpuUsageMin' module='Products.ZenModel.RRDDataPoint' class='RRDDataPoint'>
 <property select_variable="rrdtypes" type="selection" id="rrdtype" mode="w" >
 GAUGE
 </property>
@@ -268,6 +284,14 @@ True
 </property>
 </object>
 <object id='memSwapused' module='Products.ZenModel.RRDDataPoint' class='RRDDataPoint'>
+<property select_variable="rrdtypes" type="selection" id="rrdtype" mode="w" >
+GAUGE
+</property>
+<property type="boolean" id="isrow" mode="w" >
+True
+</property>
+</object>
+<object id='memUsage' module='Products.ZenModel.RRDDataPoint' class='RRDDataPoint'>
 <property select_variable="rrdtypes" type="selection" id="rrdtype" mode="w" >
 GAUGE
 </property>
@@ -334,6 +358,114 @@ True
 </tomanycont>
 </object>
 </tomanycont>
+<tomanycont id='thresholds'>
+<object id='CPU Critical' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/CPU
+</property>
+<property type="int" id="severity" mode="w" >
+5
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareHost_cpuUsageMin', 'VMwareHost_cpuUsageMax']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="maxval" mode="w" >
+90
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='CPU Warning' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/CPU
+</property>
+<property type="int" id="severity" mode="w" >
+3
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareHost_cpuUsageMin', 'VMwareHost_cpuUsageMax']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="minval" mode="w" >
+90
+</property>
+<property type="string" id="maxval" mode="w" >
+80
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='High Number of dropped Packets' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/Interface
+</property>
+<property type="int" id="severity" mode="w" >
+3
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareHost_netDroppedRx', 'VMwareHost_netDroppedTx']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="maxval" mode="w" >
+10
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='Memory Critical' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/Memory
+</property>
+<property type="int" id="severity" mode="w" >
+5
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareHost_memUsage']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="maxval" mode="w" >
+90
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='Memory Warning' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/Memory
+</property>
+<property type="int" id="severity" mode="w" >
+3
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareHost_memUsage']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="minval" mode="w" >
+90
+</property>
+<property type="string" id="maxval" mode="w" >
+80
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+</tomanycont>
 <tomanycont id='graphDefs'>
 <object id='CPU Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
 <property type="int" id="height" mode="w" >
@@ -343,7 +475,7 @@ True
 500
 </property>
 <property type="string" id="units" mode="w" >
-percentage
+percent
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -364,9 +496,31 @@ True
 1
 </property>
 <tomanycont id='graphPoints'>
-<object id='CPU Usage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='CPU Critical' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
+</property>
+<property type="string" id="threshId" mode="w" >
+CPU Critical
+</property>
+<property type="string" id="legend" mode="w" >
+Critical Threshold
+</property>
+</object>
+<object id='CPU Warning' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+1
+</property>
+<property type="string" id="threshId" mode="w" >
+CPU Warning
+</property>
+<property type="string" id="legend" mode="w" >
+Warning Threshold
+</property>
+</object>
+<object id='cpuUsageAvg' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+4
 </property>
 <property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
 AREA
@@ -381,16 +535,71 @@ False
 %5.2lf%%
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+CPU Usage (Average)
 </property>
 <property type="long" id="limit" mode="w" >
 -1
 </property>
-<property type="string" id="rpn" mode="w" >
-100,/
+<property type="string" id="dpName" mode="w" >
+VMwareHost_cpuUsageAvg
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+<object id='cpuUsageMax' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+3
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+AREA
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%%
+</property>
+<property type="string" id="legend" mode="w" >
+CPU Usage (Max)
+</property>
+<property type="long" id="limit" mode="w" >
+-1
 </property>
 <property type="string" id="dpName" mode="w" >
-VMwareHost_cpuUsage
+VMwareHost_cpuUsageMax
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+<object id='cpuUsageMin' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+2
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+AREA
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%%
+</property>
+<property type="string" id="legend" mode="w" >
+CPU Usage (Min)
+</property>
+<property type="long" id="limit" mode="w" >
+-1
+</property>
+<property type="string" id="dpName" mode="w" >
+VMwareHost_cpuUsageMin
 </property>
 <property type="string" id="cFunc" mode="w" >
 AVERAGE
@@ -406,7 +615,7 @@ AVERAGE
 500
 </property>
 <property type="string" id="units" mode="w" >
-Bps
+bytes/sec
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -424,10 +633,10 @@ True
 True
 </property>
 <property type="long" id="sequence" mode="w" >
-3
+4
 </property>
 <tomanycont id='graphPoints'>
-<object id='Disk Usage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='diskUsage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
 </property>
@@ -444,13 +653,10 @@ False
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+Disk Usage
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-1024,*
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareHost_diskUsage
@@ -487,12 +693,23 @@ False
 True
 </property>
 <property type="long" id="sequence" mode="w" >
-7
+8
 </property>
 <tomanycont id='graphPoints'>
-<object id='netDroppedRx' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='High Number of dropped Packets' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
+</property>
+<property type="string" id="threshId" mode="w" >
+High Number of dropped Packets
+</property>
+<property type="string" id="legend" mode="w" >
+Warning Threshold
+</property>
+</object>
+<object id='netDroppedRx' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+1
 </property>
 <property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
 AREA
@@ -521,7 +738,7 @@ AVERAGE
 </object>
 <object id='netDroppedTx' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
-1
+2
 </property>
 <property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
 LINE
@@ -550,7 +767,7 @@ AVERAGE
 </object>
 </tomanycont>
 </object>
-<object id='Memory' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
+<object id='Memory Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
 <property type="int" id="height" mode="w" >
 100
 </property>
@@ -558,63 +775,53 @@ AVERAGE
 500
 </property>
 <property type="string" id="units" mode="w" >
-B
+percent
 </property>
 <property type="boolean" id="log" mode="w" >
 False
 </property>
 <property type="boolean" id="base" mode="w" >
-True
+False
 </property>
 <property type="int" id="miny" mode="w" >
--1
+0
 </property>
 <property type="int" id="maxy" mode="w" >
--1
+100
 </property>
 <property type="boolean" id="hasSummary" mode="w" >
 True
 </property>
 <property type="long" id="sequence" mode="w" >
-2
+3
 </property>
 <tomanycont id='graphPoints'>
-<object id='Active Memory' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
-<property type="long" id="sequence" mode="w" >
-1
-</property>
-<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
-AREA
-</property>
-<property type="long" id="lineWidth" mode="w" >
-1
-</property>
-<property type="boolean" id="stacked" mode="w" >
-False
-</property>
-<property type="string" id="format" mode="w" >
-%5.2lf%s
-</property>
-<property type="string" id="legend" mode="w" >
-${graphPoint/id}
-</property>
-<property type="long" id="limit" mode="w" >
--1
-</property>
-<property type="string" id="rpn" mode="w" >
-1024,*
-</property>
-<property type="string" id="dpName" mode="w" >
-VMwareHost_memActive
-</property>
-<property type="string" id="cFunc" mode="w" >
-AVERAGE
-</property>
-</object>
-<object id='Granted Memory' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='Memory Critical' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
 </property>
+<property type="string" id="threshId" mode="w" >
+Memory Critical
+</property>
+<property type="string" id="legend" mode="w" >
+Critical Threshold
+</property>
+</object>
+<object id='Memory Warning' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+1
+</property>
+<property type="string" id="threshId" mode="w" >
+Memory Warning
+</property>
+<property type="string" id="legend" mode="w" >
+Warning Threshold
+</property>
+</object>
+<object id='memUsage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+2
+</property>
 <property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
 AREA
 </property>
@@ -625,19 +832,16 @@ AREA
 False
 </property>
 <property type="string" id="format" mode="w" >
-%5.2lf%s
+%5.2lf%%
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+Memory Usage
 </property>
 <property type="long" id="limit" mode="w" >
 -1
 </property>
-<property type="string" id="rpn" mode="w" >
-1024,*
-</property>
 <property type="string" id="dpName" mode="w" >
-VMwareHost_memGranted
+VMwareHost_memUsage
 </property>
 <property type="string" id="cFunc" mode="w" >
 AVERAGE
@@ -671,7 +875,7 @@ False
 True
 </property>
 <property type="long" id="sequence" mode="w" >
-6
+7
 </property>
 <tomanycont id='graphPoints'>
 <object id='netPacketsRx' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
@@ -763,7 +967,7 @@ True
 0
 </property>
 <tomanycont id='graphPoints'>
-<object id='CPU Reserved Capacity' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='cpuReservedcapacity' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 1
 </property>
@@ -780,13 +984,10 @@ False
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+CPU Reserved Capacity
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-1000000,*
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareHost_cpuReservedcapacity
@@ -795,7 +996,7 @@ VMwareHost_cpuReservedcapacity
 AVERAGE
 </property>
 </object>
-<object id='CPU Usage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='cpuUsage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
 </property>
@@ -812,16 +1013,13 @@ False
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+CPU Usage
 </property>
 <property type="long" id="limit" mode="w" >
 -1
 </property>
-<property type="string" id="rpn" mode="w" >
-1000000,*
-</property>
 <property type="string" id="dpName" mode="w" >
-VMwareHost_cpuUsagemhz
+VMwareHost_cpuUsage
 </property>
 <property type="string" id="cFunc" mode="w" >
 AVERAGE
@@ -829,7 +1027,7 @@ AVERAGE
 </object>
 </tomanycont>
 </object>
-<object id='Swap' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
+<object id='Raw Memory Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
 <property type="int" id="height" mode="w" >
 100
 </property>
@@ -837,7 +1035,7 @@ AVERAGE
 500
 </property>
 <property type="string" id="units" mode="w" >
-B
+bytes
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -855,10 +1053,39 @@ True
 True
 </property>
 <property type="long" id="sequence" mode="w" >
-4
+2
 </property>
 <tomanycont id='graphPoints'>
-<object id='Swap Space Used' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='memActive' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+1
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+AREA
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%s
+</property>
+<property type="string" id="legend" mode="w" >
+Active Memory
+</property>
+<property type="long" id="limit" mode="w" >
+-1
+</property>
+<property type="string" id="dpName" mode="w" >
+VMwareHost_memActive
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+<object id='memGranted' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
 </property>
@@ -875,13 +1102,70 @@ False
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+Granted Memory
 </property>
 <property type="long" id="limit" mode="w" >
 -1
 </property>
-<property type="string" id="rpn" mode="w" >
-1024,*
+<property type="string" id="dpName" mode="w" >
+VMwareHost_memGranted
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+</tomanycont>
+</object>
+<object id='Swap' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
+<property type="int" id="height" mode="w" >
+100
+</property>
+<property type="int" id="width" mode="w" >
+500
+</property>
+<property type="string" id="units" mode="w" >
+bytes
+</property>
+<property type="boolean" id="log" mode="w" >
+False
+</property>
+<property type="boolean" id="base" mode="w" >
+True
+</property>
+<property type="int" id="miny" mode="w" >
+-1
+</property>
+<property type="int" id="maxy" mode="w" >
+-1
+</property>
+<property type="boolean" id="hasSummary" mode="w" >
+True
+</property>
+<property type="long" id="sequence" mode="w" >
+5
+</property>
+<tomanycont id='graphPoints'>
+<object id='memSwapused' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+0
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+AREA
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%s
+</property>
+<property type="string" id="legend" mode="w" >
+Swap Space Used
+</property>
+<property type="long" id="limit" mode="w" >
+-1
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareHost_memSwapused
@@ -918,7 +1202,7 @@ False
 True
 </property>
 <property type="long" id="sequence" mode="w" >
-5
+6
 </property>
 <tomanycont id='graphPoints'>
 <object id='netReceived' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
@@ -942,9 +1226,6 @@ Inbound
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-8192,*
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareHost_netReceived
@@ -975,9 +1256,6 @@ Outbound
 <property type="long" id="limit" mode="w" >
 -1
 </property>
-<property type="string" id="rpn" mode="w" >
-8192,*
-</property>
 <property type="string" id="dpName" mode="w" >
 VMwareHost_netTransmitted
 </property>
@@ -991,7 +1269,7 @@ AVERAGE
 </object>
 <object id='ESXiVM' module='Products.ZenModel.RRDTemplate' class='RRDTemplate'>
 <property type="string" id="targetPythonClass" mode="w" >
-Products.ZenModel.Device
+ZenPacks.community.VMwareESXiMonitor.ESXiVM
 </property>
 <tomanycont id='datasources'>
 <object id='VMwareGuest' module='ZenPacks.community.VMwareESXiMonitor.datasources.VMwareDataSource' class='VMwareDataSource'>
@@ -1109,6 +1387,94 @@ True
 </tomanycont>
 </object>
 </tomanycont>
+<tomanycont id='thresholds'>
+<object id='CPU Critical' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/CPU
+</property>
+<property type="int" id="severity" mode="w" >
+5
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareGuest_cpuUsageMin', 'VMwareGuest_cpuUsageMax']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="maxval" mode="w" >
+90
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='CPU Warning' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/CPU
+</property>
+<property type="int" id="severity" mode="w" >
+3
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareGuest_cpuUsageMin', 'VMwareGuest_cpuUsageMax']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="minval" mode="w" >
+90
+</property>
+<property type="string" id="maxval" mode="w" >
+80
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='Memory Critical' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/Memory
+</property>
+<property type="int" id="severity" mode="w" >
+5
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareGuest_memUsage']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="maxval" mode="w" >
+90
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+<object id='Memory Warning' module='Products.ZenModel.MinMaxThreshold' class='MinMaxThreshold'>
+<property type="string" id="eventClass" mode="w" >
+/Perf/Memory
+</property>
+<property type="int" id="severity" mode="w" >
+3
+</property>
+<property label="DataPoints" type="lines" id="dsnames" mode="w" >
+['VMwareGuest_memUsage']
+</property>
+<property label="Enabled" type="boolean" id="enabled" mode="w" >
+True
+</property>
+<property type="string" id="minval" mode="w" >
+90
+</property>
+<property type="string" id="maxval" mode="w" >
+80
+</property>
+<property type="int" id="escalateCount" mode="w" >
+0
+</property>
+</object>
+</tomanycont>
 <tomanycont id='graphDefs'>
 <object id='CPU Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
 <property type="int" id="height" mode="w" >
@@ -1118,7 +1484,7 @@ True
 500
 </property>
 <property type="string" id="units" mode="w" >
-percentage
+percent
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -1127,10 +1493,10 @@ False
 False
 </property>
 <property type="int" id="miny" mode="w" >
--1
+0
 </property>
 <property type="int" id="maxy" mode="w" >
--1
+100
 </property>
 <property type="boolean" id="hasSummary" mode="w" >
 True
@@ -1139,9 +1505,31 @@ True
 1
 </property>
 <tomanycont id='graphPoints'>
-<object id='CPU Usage  (Max)' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='CPU Critical' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+0
+</property>
+<property type="string" id="threshId" mode="w" >
+CPU Critical
+</property>
+<property type="string" id="legend" mode="w" >
+Critical Threshold
+</property>
+</object>
+<object id='CPU Warning' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 1
+</property>
+<property type="string" id="threshId" mode="w" >
+CPU Warning
+</property>
+<property type="string" id="legend" mode="w" >
+Warning Threshold
+</property>
+</object>
+<object id='cpuUsageAvg' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+4
 </property>
 <property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
 AREA
@@ -1156,13 +1544,39 @@ False
 %5.2lf%%
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+CPU Usage (Average)
 </property>
 <property type="long" id="limit" mode="w" >
 -1
 </property>
-<property type="string" id="rpn" mode="w" >
-100,/
+<property type="string" id="dpName" mode="w" >
+VMwareGuest_cpuUsageAvg
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+<object id='cpuUsageMax' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+3
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+AREA
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%%
+</property>
+<property type="string" id="legend" mode="w" >
+CPU Usage (Max)
+</property>
+<property type="long" id="limit" mode="w" >
+-1
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareGuest_cpuUsageMax
@@ -1171,7 +1585,7 @@ VMwareGuest_cpuUsageMax
 AVERAGE
 </property>
 </object>
-<object id='CPU Usage (Average)' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='cpuUsageMin' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 2
 </property>
@@ -1188,45 +1602,10 @@ False
 %5.2lf%%
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+CPU Usage (Min)
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-100,/
-</property>
-<property type="string" id="dpName" mode="w" >
-VMwareGuest_cpuUsageAvg
-</property>
-<property type="string" id="cFunc" mode="w" >
-AVERAGE
-</property>
-</object>
-<object id='CPU Usage (Min)' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
-<property type="long" id="sequence" mode="w" >
-0
-</property>
-<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
-AREA
-</property>
-<property type="long" id="lineWidth" mode="w" >
-1
-</property>
-<property type="boolean" id="stacked" mode="w" >
-False
-</property>
-<property type="string" id="format" mode="w" >
-%5.2lf%%
-</property>
-<property type="string" id="legend" mode="w" >
-${graphPoint/id}
-</property>
-<property type="long" id="limit" mode="w" >
--1
-</property>
-<property type="string" id="rpn" mode="w" >
-100,/
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareGuest_cpuUsageMin
@@ -1245,7 +1624,7 @@ AVERAGE
 500
 </property>
 <property type="string" id="units" mode="w" >
-Bps
+bytes/sec
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -1266,7 +1645,7 @@ True
 4
 </property>
 <tomanycont id='graphPoints'>
-<object id='Disk Usage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='diskUsage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
 </property>
@@ -1283,13 +1662,10 @@ False
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+Disk Usage
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-1024,*
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareGuest_diskUsage
@@ -1300,7 +1676,7 @@ AVERAGE
 </object>
 </tomanycont>
 </object>
-<object id='Host Memory Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
+<object id='Memory Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
 <property type="int" id="height" mode="w" >
 100
 </property>
@@ -1308,7 +1684,149 @@ AVERAGE
 500
 </property>
 <property type="string" id="units" mode="w" >
-B
+percent
+</property>
+<property type="boolean" id="log" mode="w" >
+False
+</property>
+<property type="boolean" id="base" mode="w" >
+False
+</property>
+<property type="int" id="miny" mode="w" >
+0
+</property>
+<property type="int" id="maxy" mode="w" >
+100
+</property>
+<property type="boolean" id="hasSummary" mode="w" >
+True
+</property>
+<property type="long" id="sequence" mode="w" >
+2
+</property>
+<tomanycont id='graphPoints'>
+<object id='Memory Critical' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+0
+</property>
+<property type="string" id="threshId" mode="w" >
+Memory Critical
+</property>
+<property type="string" id="legend" mode="w" >
+Critical Threshold
+</property>
+</object>
+<object id='Memory Warning' module='Products.ZenModel.ThresholdGraphPoint' class='ThresholdGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+1
+</property>
+<property type="string" id="threshId" mode="w" >
+Memory Warning
+</property>
+<property type="string" id="legend" mode="w" >
+Warning Threshold
+</property>
+</object>
+<object id='memUsage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+2
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+AREA
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%%
+</property>
+<property type="string" id="legend" mode="w" >
+Memory Usage
+</property>
+<property type="long" id="limit" mode="w" >
+-1
+</property>
+<property type="string" id="dpName" mode="w" >
+VMwareGuest_memUsage
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+</tomanycont>
+</object>
+<object id='Raw CPU Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
+<property type="int" id="height" mode="w" >
+100
+</property>
+<property type="int" id="width" mode="w" >
+500
+</property>
+<property type="string" id="units" mode="w" >
+Hz
+</property>
+<property type="boolean" id="log" mode="w" >
+False
+</property>
+<property type="boolean" id="base" mode="w" >
+False
+</property>
+<property type="int" id="miny" mode="w" >
+-1
+</property>
+<property type="int" id="maxy" mode="w" >
+-1
+</property>
+<property type="boolean" id="hasSummary" mode="w" >
+True
+</property>
+<property type="long" id="sequence" mode="w" >
+0
+</property>
+<tomanycont id='graphPoints'>
+<object id='cpuUsage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<property type="long" id="sequence" mode="w" >
+0
+</property>
+<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
+LINE
+</property>
+<property type="long" id="lineWidth" mode="w" >
+1
+</property>
+<property type="boolean" id="stacked" mode="w" >
+False
+</property>
+<property type="string" id="format" mode="w" >
+%5.2lf%s
+</property>
+<property type="string" id="legend" mode="w" >
+CPU Usage
+</property>
+<property type="long" id="limit" mode="w" >
+-1
+</property>
+<property type="string" id="dpName" mode="w" >
+VMwareGuest_cpuUsage
+</property>
+<property type="string" id="cFunc" mode="w" >
+AVERAGE
+</property>
+</object>
+</tomanycont>
+</object>
+<object id='Raw Host Memory Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
+<property type="int" id="height" mode="w" >
+100
+</property>
+<property type="int" id="width" mode="w" >
+500
+</property>
+<property type="string" id="units" mode="w" >
+bytes
 </property>
 <property type="boolean" id="log" mode="w" >
 False
@@ -1329,7 +1847,7 @@ True
 3
 </property>
 <tomanycont id='graphPoints'>
-<object id='Host Memory Consumed' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='memConsumed' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 1
 </property>
@@ -1346,13 +1864,10 @@ True
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+Host Memory Consumed
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-1024,*
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareGuest_memConsumed
@@ -1361,7 +1876,7 @@ VMwareGuest_memConsumed
 AVERAGE
 </property>
 </object>
-<object id='Overhead Memory' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
+<object id='memOverhead' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
 <property type="long" id="sequence" mode="w" >
 0
 </property>
@@ -1378,139 +1893,13 @@ True
 %5.2lf%s
 </property>
 <property type="string" id="legend" mode="w" >
-${graphPoint/id}
+Overhead Memory
 </property>
 <property type="long" id="limit" mode="w" >
 -1
-</property>
-<property type="string" id="rpn" mode="w" >
-1024,*
 </property>
 <property type="string" id="dpName" mode="w" >
 VMwareGuest_memOverhead
-</property>
-<property type="string" id="cFunc" mode="w" >
-AVERAGE
-</property>
-</object>
-</tomanycont>
-</object>
-<object id='Memory Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
-<property type="int" id="height" mode="w" >
-100
-</property>
-<property type="int" id="width" mode="w" >
-500
-</property>
-<property type="string" id="units" mode="w" >
-percentage
-</property>
-<property type="boolean" id="log" mode="w" >
-False
-</property>
-<property type="boolean" id="base" mode="w" >
-False
-</property>
-<property type="int" id="miny" mode="w" >
--1
-</property>
-<property type="int" id="maxy" mode="w" >
--1
-</property>
-<property type="boolean" id="hasSummary" mode="w" >
-True
-</property>
-<property type="long" id="sequence" mode="w" >
-2
-</property>
-<tomanycont id='graphPoints'>
-<object id='Memory Usage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
-<property type="long" id="sequence" mode="w" >
-0
-</property>
-<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
-AREA
-</property>
-<property type="long" id="lineWidth" mode="w" >
-1
-</property>
-<property type="boolean" id="stacked" mode="w" >
-False
-</property>
-<property type="string" id="format" mode="w" >
-%5.2lf%%
-</property>
-<property type="string" id="legend" mode="w" >
-${graphPoint/id}
-</property>
-<property type="long" id="limit" mode="w" >
--1
-</property>
-<property type="string" id="rpn" mode="w" >
-100,/
-</property>
-<property type="string" id="dpName" mode="w" >
-VMwareGuest_memUsage
-</property>
-<property type="string" id="cFunc" mode="w" >
-AVERAGE
-</property>
-</object>
-</tomanycont>
-</object>
-<object id='Raw CPU Usage' module='Products.ZenModel.GraphDefinition' class='GraphDefinition'>
-<property type="int" id="height" mode="w" >
-100
-</property>
-<property type="int" id="width" mode="w" >
-500
-</property>
-<property type="boolean" id="log" mode="w" >
-False
-</property>
-<property type="boolean" id="base" mode="w" >
-False
-</property>
-<property type="int" id="miny" mode="w" >
--1
-</property>
-<property type="int" id="maxy" mode="w" >
--1
-</property>
-<property type="boolean" id="hasSummary" mode="w" >
-True
-</property>
-<property type="long" id="sequence" mode="w" >
-0
-</property>
-<tomanycont id='graphPoints'>
-<object id='CPU Usage' module='Products.ZenModel.DataPointGraphPoint' class='DataPointGraphPoint'>
-<property type="long" id="sequence" mode="w" >
-0
-</property>
-<property select_variable="lineTypes" type="selection" id="lineType" mode="w" >
-LINE
-</property>
-<property type="long" id="lineWidth" mode="w" >
-1
-</property>
-<property type="boolean" id="stacked" mode="w" >
-False
-</property>
-<property type="string" id="format" mode="w" >
-%5.2lf%s
-</property>
-<property type="string" id="legend" mode="w" >
-${graphPoint/id}
-</property>
-<property type="long" id="limit" mode="w" >
--1
-</property>
-<property type="string" id="rpn" mode="w" >
-1000000,*
-</property>
-<property type="string" id="dpName" mode="w" >
-VMwareGuest_cpuUsage
 </property>
 <property type="string" id="cFunc" mode="w" >
 AVERAGE
