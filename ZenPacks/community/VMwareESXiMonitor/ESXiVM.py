@@ -38,17 +38,17 @@ class ESXiVM(DeviceComponent, ManagedEntity):
     def device(self):
         return self.esxiHost()
 
-    def adminStatus(self):
-        status = self.cacheRRDValue('adminStatus')
-        if status is None or isnan(status):
-            return None
-        return int(status)
+    def adminStatus(self, default = None):
+        status = self.cacheRRDValue('adminStatus', default)
+        if status is not None and status != 'Unknown' and not isnan(status):
+            return int(status)
+        return None
 
-    def operStatus(self):
-        status = self.cacheRRDValue('operStatus')
-        if status is None or isnan(status):
-            return None
-        return int(status)
+    def operStatus(self, default = None):
+        status = self.cacheRRDValue('operStatus', default)
+        if status is not None and status != 'Unknown' and not isnan(status):
+            return int(status)
+        return None
 
 InitializeClass(ESXiVM)
 
