@@ -51,7 +51,7 @@ class VMwareESXiDatastoreMap(PythonPlugin):
             elif re.search(';', line):
                 name, type, capacity, accessible = line.split(';')
                 if not int(accessible) == 1:
-                    log.warning('Datastore %s of device %s is not accessible' % name, device.id)
+                    log.warning('Datastore %s of device %s is not accessible' % (name, device.id))
                     continue
                 rm.append(self.objectMap({
                     'id': self.prepId(name),
